@@ -2,6 +2,7 @@ import discord
 import requests
 from dotenv import load_dotenv
 import os
+import time  
 
 load_dotenv()
 
@@ -31,18 +32,50 @@ async def on_message(message):
             await message.channel.send('Failed to generate image.')
 
 def generate_image(prompt):
-    url = "https://api.prodia.com/v1/generate"
+    url = "https://api.prodia.com/v1/sd/generate"
     headers = {
-        "Authorization": f"Bearer {PRODIA_API_KEY}",
-        "Content-Type": "application/json"
+        "accept": "application/json",
+        "content-type": "application/json",
+        "X-Prodia-Key": f'{PRODIA_API_KEY}'
     }
     data = {
         "prompt": prompt,
-        "num_images": 1
+        "steps": 50, 
+        "num_images": 1,
+        "width": 512,
+        "height": 512
     }
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
-        return response.json()['images'][0]['url']
+        try:
+            job_id = response.json()["job"]
+            url = f"https://api.prodia.com/v1/job/{job_id}"
+            
+            time.sleep(9)
+
+            response = requests.get(url, headers=headers)
+
+            if response.status_code == 200:
+                try:
+                    status = response.json()["status"]
+                    if status == "succeeded":
+                        return response.json()["imageUrl"]
+                    elif status == "failed":
+                        print("Error: job failed")
+                        return None
+                    else:
+                        print(f"Error: unknown status - {status}")
+                        return None
+                except (KeyError, IndexError):
+                    print("Error parsing response JSON:", response.json())
+                    return None
+            else:
+                print(f"Error: {response.status_code} - {response.text}")
+                return None
+            
+        except (KeyError, IndexError):
+            print("Error parsing response JSON:", response.json())
+            return None
     else:
         print(f"Error: {response.status_code} - {response.text}")
         return None
