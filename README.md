@@ -10,20 +10,25 @@ This repository contains a Python-based Discord bot that integrates with Daytona
 
 1. **Install Daytona**: Follow the [Daytona installation guide](https://www.daytona.io/docs/installation/installation/).
 
-2. **Create the Workspace**:
+2. **Start the Server**:
+   ```bash
+   daytona serve;
+   ```
+
+3. **Create the Workspace**:
 
    ```bash
    daytona create https://github.com/TheCoderAdi/discord-bot
    ```
 
-3. **Setup Environment**:  
+4. **Setup Environment**:  
    Ensure all dependencies are installed by running:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Configure the Bot**:
+5. **Configure the Bot**:
 
    - Create a `.env` file with your bot token and any other necessary credentials:
      ```
@@ -31,7 +36,7 @@ This repository contains a Python-based Discord bot that integrates with Daytona
      PRODIA_API_KEY=your_prodia_api_key
      ```
 
-5. **Run the Bot**:  
+6. **Run the Bot**:  
    Start the bot by running:
    ```bash
    python bot.py
